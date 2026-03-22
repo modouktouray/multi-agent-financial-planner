@@ -1,0 +1,67 @@
+# Environment & secrets (keep *.example templates tracked)
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+ENV/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Terraform
+**/.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+**/terraform.tfvars
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Node (root or future packages)
+node_modules/
+
+# Next.js (if build artifacts appear outside frontend/)
+.next/
+out/
+
+# IDE & editors
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Logs & local scratch
+*.log
+logs/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# AWS SAM / CDK (if used later)
+.aws-sam/
+cdk.out/
+
+# Vercel (if linked at repo root)
+.vercel/
