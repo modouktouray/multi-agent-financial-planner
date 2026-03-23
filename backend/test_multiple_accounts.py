@@ -36,9 +36,28 @@ def test_multiple_accounts():
     )
     print(f'\n✅ Created test user: {test_user_id}')
     
-    # Ensure instruments exist
-    instruments = ["SPY", "BND", "VTI", "VXUS", "QQQ", "IWM", "EFA", "AGG", "VNQ", "GLD"]
-    for i, symbol in enumerate(instruments):
+    # Position symbols used below (FK: positions.symbol -> instruments.symbol)
+    positions1 = [
+        ('SPY', 100),
+        ('QQQ', 50),
+        ('BND', 200)
+    ]
+    positions2 = [
+        ('VTI', 75),
+        ('VXUS', 50),
+        ('GLD', 25)
+    ]
+    positions3 = [
+        ('VEA', 150),
+        ('TSLA', 10),
+        ('ARKK', 50),
+        ('BND', 300)
+    ]
+    extra_catalog = ["IWM", "EFA", "AGG", "VNQ"]
+    symbols_to_ensure = sorted(
+        {s for ps in (positions1, positions2, positions3) for s, _ in ps} | set(extra_catalog)
+    )
+    for i, symbol in enumerate(symbols_to_ensure):
         existing = db.instruments.find_by_symbol(symbol)
         if not existing:
             db.instruments.create({
@@ -65,11 +84,6 @@ def test_multiple_accounts():
     print(f'✅ Created account 1: Taxable Brokerage')
     
     # Add positions to account 1
-    positions1 = [
-        ('SPY', 100),
-        ('QQQ', 50),
-        ('BND', 200)
-    ]
     for symbol, quantity in positions1:
         sql = "INSERT INTO positions (account_id, symbol, quantity) VALUES (:account_id::uuid, :symbol, :quantity)"
         params = [
@@ -91,11 +105,6 @@ def test_multiple_accounts():
     print(f'✅ Created account 2: Roth IRA')
     
     # Add positions to account 2
-    positions2 = [
-        ('VTI', 75),
-        ('VXUS', 50),
-        ('GLD', 25)
-    ]
     for symbol, quantity in positions2:
         sql = "INSERT INTO positions (account_id, symbol, quantity) VALUES (:account_id::uuid, :symbol, :quantity)"
         params = [
@@ -117,12 +126,6 @@ def test_multiple_accounts():
     print(f'✅ Created account 3: 401(k)')
     
     # Add positions to account 3
-    positions3 = [
-        ('VEA', 150),
-        ('TSLA', 10),
-        ('ARKK', 50),
-        ('BND', 300)
-    ]
     for symbol, quantity in positions3:
         sql = "INSERT INTO positions (account_id, symbol, quantity) VALUES (:account_id::uuid, :symbol, :quantity)"
         params = [

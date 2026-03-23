@@ -12,6 +12,10 @@ from src.schemas import InstrumentCreate
 from pydantic import ValidationError
 from dotenv import load_dotenv
 
+from stdio_utf8 import reconfigure_stdio
+
+reconfigure_stdio()
+
 # Load environment variables
 load_dotenv(override=True)
 

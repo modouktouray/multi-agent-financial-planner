@@ -54,7 +54,7 @@ def main():
 
     # Get ECR repository URL from Terraform
     print("\nGetting ECR repository URL...")
-    terraform_dir = Path(__file__).parent.parent.parent / "terraform" / "4_researcher"
+    terraform_dir = Path(__file__).parent.parent.parent / "terraform" / "researcher"
     original_dir = os.getcwd()
 
     try:
@@ -123,7 +123,7 @@ def main():
 
     print("\n✅ Docker image pushed successfully!")
     print(
-        "\nNext step: Run 'terraform apply' in terraform/4_researcher to create the App Runner service."
+        "\nNext step: Run 'terraform apply' in terraform/researcher to create the App Runner service."
     )
 
     # Get App Runner service ARN

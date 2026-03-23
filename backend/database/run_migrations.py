@@ -9,6 +9,10 @@ from pathlib import Path
 from botocore.exceptions import ClientError
 from dotenv import load_dotenv
 
+from stdio_utf8 import reconfigure_stdio
+
+reconfigure_stdio()
+
 # Load environment variables
 load_dotenv(override=True)
 

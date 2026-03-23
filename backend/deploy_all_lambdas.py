@@ -29,7 +29,7 @@ def taint_and_deploy_via_terraform() -> bool:
         True if successful, False otherwise
     """
     # Change to terraform directory
-    terraform_dir = Path(__file__).parent.parent / "terraform" / "6_agents"
+    terraform_dir = Path(__file__).parent.parent / "terraform" / "agents"
     if not terraform_dir.exists():
         print(f"❌ Terraform directory not found: {terraform_dir}")
         return False
@@ -214,7 +214,7 @@ def main():
         print("   1. Check terraform output for errors")
         print("   2. Ensure all packages exist (use --package flag)")
         print("   3. Verify AWS credentials and permissions")
-        print("   4. Check terraform state: cd terraform/6_agents && terraform plan")
+        print("   4. Check terraform state: cd terraform/agents && terraform plan")
         sys.exit(1)
 
 if __name__ == "__main__":

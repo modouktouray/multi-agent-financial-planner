@@ -24,7 +24,12 @@ def run_packaging(agent_name):
 
     try:
         result = subprocess.run(
-            ["uv", "run", "package_docker.py"], cwd=str(agent_dir), capture_output=True, text=True
+            ["uv", "run", "package_docker.py"],
+            cwd=str(agent_dir),
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
         )
 
         if result.returncode == 0:

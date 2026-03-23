@@ -7,6 +7,8 @@ Drops all tables, recreates schema, and loads seed data
 import sys
 import argparse
 from pathlib import Path
+
+from stdio_utf8 import reconfigure_stdio
 from src.client import DataAPIClient
 from src.models import Database
 from src.schemas import UserCreate, AccountCreate, PositionCreate
@@ -148,7 +150,9 @@ def main():
     parser.add_argument('--skip-drop', action='store_true',
                        help='Skip dropping tables (just reload data)')
     args = parser.parse_args()
-    
+
+    reconfigure_stdio()
+
     print("🚀 Database Reset Script")
     print("=" * 50)
     
@@ -176,8 +180,13 @@ def main():
     # Load seed data
     print("\n🌱 Loading seed data...")
     import subprocess
-    result = subprocess.run(['uv', 'run', 'seed_data.py'], 
-                          capture_output=True, text=True)
+    result = subprocess.run(
+        ["uv", "run", "seed_data.py"],
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+    )
     
     if result.returncode != 0:
         print("❌ Seed data failed!")

@@ -47,7 +47,7 @@ def confirm_destruction():
 
 def get_bucket_name():
     """Get the S3 bucket name from Terraform output."""
-    terraform_dir = Path(__file__).parent.parent / "terraform" / "7_frontend"
+    terraform_dir = Path(__file__).parent.parent / "terraform" / "frontend"
 
     if not terraform_dir.exists():
         print(f"  ❌ Terraform directory not found: {terraform_dir}")
@@ -105,7 +105,7 @@ def destroy_terraform():
     """Destroy infrastructure with Terraform."""
     print("\n🏗️  Destroying infrastructure with Terraform...")
 
-    terraform_dir = Path(__file__).parent.parent / "terraform" / "7_frontend"
+    terraform_dir = Path(__file__).parent.parent / "terraform" / "frontend"
 
     if not terraform_dir.exists():
         print(f"  ❌ Terraform directory not found: {terraform_dir}")

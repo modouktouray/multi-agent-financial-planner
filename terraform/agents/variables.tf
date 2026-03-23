@@ -24,7 +24,7 @@ variable "bedrock_model_id" {
 }
 
 variable "bedrock_region" {
-  description = "AWS region for Bedrock"
+  description = "AWS region passed to agents as BEDROCK_REGION (Bedrock client / routing). IAM allows InvokeModel on foundation models and inference profiles in all regions."
   type        = string
 }
 

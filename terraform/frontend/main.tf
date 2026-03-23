@@ -19,19 +19,19 @@ data "aws_caller_identity" "current" {}
 
 data "aws_region" "current" {}
 
-# Reference Part 5 Database resources
+# Reference database stack (terraform/database) — state file lives in that module directory
 data "terraform_remote_state" "database" {
   backend = "local"
   config = {
-    path = "../5_database/terraform.tfstate"
+    path = "${path.module}/../database/terraform.tfstate"
   }
 }
 
-# Reference Part 6 Agents resources
+# Reference agents stack (terraform/agents)
 data "terraform_remote_state" "agents" {
   backend = "local"
   config = {
-    path = "../6_agents/terraform.tfstate"
+    path = "${path.module}/../agents/terraform.tfstate"
   }
 }
 

@@ -10,12 +10,20 @@ import shutil
 import tempfile
 import subprocess
 import argparse
+import zipfile
 from pathlib import Path
 
 def run_command(cmd, cwd=None):
     """Run a command and capture output."""
     print(f"Running: {' '.join(cmd)}")
-    result = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True)
+    result = subprocess.run(
+        cmd,
+        cwd=cwd,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+    )
     if result.returncode != 0:
         print(f"Error: {result.stderr}")
         sys.exit(1)
@@ -87,12 +95,16 @@ def package_lambda():
         if zip_path.exists():
             zip_path.unlink()
         
-        # Create new zip
+        # Create new zip (zipfile: portable; no Unix `zip` on Windows PATH)
         print(f"Creating zip file: {zip_path}")
-        run_command(
-            ["zip", "-r", str(zip_path), "."],
-            cwd=str(package_dir)
-        )
+        with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zf:
+            for path in package_dir.rglob("*"):
+                if not path.is_file():
+                    continue
+                rel = path.relative_to(package_dir)
+                if "__pycache__" in rel.parts or path.suffix == ".pyc":
+                    continue
+                zf.write(path, rel)
         
         # Get file size
         size_mb = zip_path.stat().st_size / (1024 * 1024)

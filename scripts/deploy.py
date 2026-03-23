@@ -11,12 +11,32 @@ This script:
 NOTE: This script uses .env.production for deployment and does NOT modify .env.local
 """
 
+import json
+import os
+import shutil
 import subprocess
 import sys
-import os
-import json
 import time
 from pathlib import Path
+
+
+def find_npm() -> str | None:
+    """Resolve npm for subprocess (Windows: use npm.cmd — CreateProcess won't run extensionless shims)."""
+    if sys.platform == "win32":
+        for name in ("npm.cmd", "npm"):
+            path = shutil.which(name)
+            if path:
+                return path
+        node = shutil.which("node.exe") or shutil.which("node")
+        if node:
+            parent = Path(node).parent
+            for name in ("npm.cmd", "npm"):
+                candidate = parent / name
+                if candidate.is_file():
+                    return str(candidate)
+        return None
+    path = shutil.which("npm")
+    return path
 
 
 def run_command(cmd, cwd=None, check=True, capture_output=False, env=None):
@@ -44,8 +64,7 @@ def check_prerequisites():
     tools = {
         "docker": "Docker is required for Lambda packaging",
         "terraform": "Terraform is required for infrastructure deployment",
-        "npm": "npm is required for building the frontend",
-        "aws": "AWS CLI is required for S3 sync and CloudFront invalidation"
+        "aws": "AWS CLI is required for S3 sync and CloudFront invalidation",
     }
 
     for tool, message in tools.items():
@@ -55,6 +74,19 @@ def check_prerequisites():
         except (subprocess.CalledProcessError, FileNotFoundError):
             print(f"  ❌ {message}")
             sys.exit(1)
+
+    npm_exe = find_npm()
+    if not npm_exe:
+        print("  ❌ Node.js (npm) is required for building the frontend.")
+        print("     Install: https://nodejs.org/  or  winget install OpenJS.NodeJS.LTS")
+        print("     Reopen the terminal after install so PATH includes Node.")
+        sys.exit(1)
+    try:
+        run_command([npm_exe, "--version"], capture_output=True)
+        print("  ✅ npm is installed")
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        print("  ❌ npm was found but does not run correctly. Reinstall Node.js LTS.")
+        sys.exit(1)
 
     # Check if Docker is running
     try:
@@ -106,11 +138,16 @@ def build_frontend(api_url=None):
         print(f"  ❌ Frontend directory not found: {frontend_dir}")
         sys.exit(1)
 
+    npm_exe = find_npm()
+    if not npm_exe:
+        print("  ❌ npm not found. Install Node.js LTS and reopen your terminal.")
+        sys.exit(1)
+
     # Install dependencies if needed
     node_modules = frontend_dir / "node_modules"
     if not node_modules.exists():
         print("  Installing dependencies...")
-        run_command(["npm", "install"], cwd=frontend_dir)
+        run_command([npm_exe, "install"], cwd=frontend_dir)
 
     # If API URL is provided, create .env.production.local to override .env.local
     if api_url:
@@ -152,7 +189,7 @@ def build_frontend(api_url=None):
     # Set NODE_ENV to production to ensure .env.production is used
     build_env = os.environ.copy()
     build_env["NODE_ENV"] = "production"
-    run_command(["npm", "run", "build"], cwd=frontend_dir, env=build_env)
+    run_command([npm_exe, "run", "build"], cwd=frontend_dir, env=build_env)
 
     # Verify the build
     out_dir = frontend_dir / "out"
@@ -168,7 +205,7 @@ def deploy_terraform():
     """Deploy infrastructure with Terraform."""
     print("\n🏗️  Deploying infrastructure with Terraform...")
 
-    terraform_dir = Path(__file__).parent.parent / "terraform" / "7_frontend"
+    terraform_dir = Path(__file__).parent.parent / "terraform" / "frontend"
 
     if not terraform_dir.exists():
         print(f"  ❌ Terraform directory not found: {terraform_dir}")
