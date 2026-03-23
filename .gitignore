@@ -59,6 +59,10 @@ logs/
 # Jupyter
 .ipynb_checkpoints/
 
+# Lambda deployment packages (local Docker/script builds)
+backend/**/*_lambda.zip
+backend/ingest/lambda_function.zip
+
 # AWS SAM / CDK (if used later)
 .aws-sam/
 cdk.out/
